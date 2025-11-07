@@ -1,0 +1,80 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+{% load auction_extras %}
+
+{% block watchlist %}
+    <a class="nav-link" href="{% url 'view_watchlist' %}">Watchlist
+        <span class="badge text-bg-secondary">{{ watchlist_count }}</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="category-search container-sm d-flex justify-content-evenly">
+        <form class="category-search-form" action="{% url 'category' category_name %}">
+            <div class="input-group">
+                <select name="category" class="form-select" value="{{ category_name }}">
+                    <option value="Any">Any</option>
+                    <option value="Cars">Cars</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Home">Home</option>
+                    <option value="Toys">Toys</option>
+                </select>
+                <input type="text" class="form-control" name="q" aria-label="Text input with dropdown button">
+                <button class="btn btn-outline-secondary search-btn" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+    {% for listing in listings %}
+        <div class="search-result-wrapper">
+            <div class="card search-result-card mb-3" onclick="location.href='{% url 'bid' listing.id %}';" style="max-width:100%;">
+                <div class="row g-0">
+                    <div class="col-md-4" style="max-height: 40vh">
+                        {% if listing.image_url %}
+                            <img src="{{ listing.image_url }}"  class="img-fluid rounded-start" style="height: 100%; width:100%;">
+                        {% else %}
+                            <img src="{% static 'auctions/auction_logo.png' %}"  class="img-fluid rounded-start" alt="...">
+                        {% endif %}                    
+                    </div>
+                    <div class="col-md-8 listing-card-body">
+                        <div class="card-body listing-card-body">
+                            <h5 class="card-title">{{ listing.title }}</h5>
+                            <p class="card-text" style="font-weight:700"> category: {{category_name}}</p>
+                            <p class="card-text" style="font-weight:700">Current price: ₹{{ current_price|get_item:listing.id|floatformat:2 }}</p>
+                            <p class="card-text"><small style="font-weight:700">created: {{ listing.created_at}}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+    <div class="search-result-wrapper">
+        <div class="card search-result-card mb-3" style="max-width:100%;">
+            <div class="row g-0">
+                <div class="col-md-4" style="max-height: 40vh">
+                  <img src="{% static 'auctions/auction_logo.png' %}"  class="img-fluid rounded-start" alt="...">              
+                </div>
+                <div class="col-md-8 listing-card-body">
+                    <div class="card-body listing-card-body">
+                        <h5 class="card-title">No listing found</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <script type="text/javascript">
+        const collection = document.getElementsByTagName("option");
+        for (let i = 0; i < collection.length; i++) {
+            if (collection[i].value === "{{category_name}}") {
+                collection[i].setAttribute("selected", "selected");
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        ScrollReveal({ reset: true });
+        ScrollReveal().reveal('.card', {interval: 800});
+    </script>
+{% endblock %}

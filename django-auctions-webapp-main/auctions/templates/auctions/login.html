@@ -1,0 +1,38 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+    <div class="login-wrapper">
+        <div class="login-header">
+            <h2>Login</h2>
+        </div>
+
+        {% if message %}
+            <div class="login-error">{{ message }}</div>
+        {% endif %}
+
+        <form class="login-form" action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">
+                    <img src="{% static 'auctions/icons8-username-50.png' %}" width="25px" height="25px">
+                </span>
+                <input autofocus type="text" class="form-control" name="username" placeholder="Username" aria-describedby="addon-wrapping">
+            </div>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">
+                    <img src="{% static 'auctions/icons8-password-50.png' %}" width="25px" height="25px">
+                </span>
+                <input type="password" class="form-control" name="password" placeholder="Password" aria-describedby="addon-wrapping">
+            </div>
+            <div class="form-btn login-btn-container">
+                <input class="btn login-btn" type="submit" value="Login">
+            </div>
+        </form>
+
+        <div class="create-account">
+            <span>Don't have an account? </span><a href="{% url 'register' %}">Register here.</a>
+        </div>
+    </div>
+{% endblock %}

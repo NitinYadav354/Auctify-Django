@@ -1,0 +1,222 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+{% load auction_extras %}
+
+{% block watchlist %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Watchlist <span class="badge text-bg-secondary">{{ watchlist_count }}</span>
+    </a>
+    <ul class="dropdown-menu">
+        <li><a id="test" class="dropdown-item options" href="{% url 'watchlist' 'add' listing.id %}">Add to</a></li>
+        <li><a class="dropdown-item options" href="{% url 'watchlist' 'remove' listing.id %}">Remove</a></li>
+        <li><a class="dropdown-item options" href="{% url 'view_watchlist' %}">View watchlist</a></li>
+    </ul>
+</li>
+{% endblock %}
+
+{% block close %}
+    {% if user.username|lower == listing.listed_by|lower %}
+        <a class="nav-link test" href="#" onclick="openCloseModal();">Close Auction</a>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid listing-wrapper">
+        <div class="row" style="height:100%;">
+            <div class="col-md-6">
+                <div class="row" style="margin-bottom: 0;">
+                    <div class="col-md-12">
+                        <div class="card card-index">
+                            {% if listing.image_url %}
+                                <img src="{{listing.image_url}}" class="card-img-top">   
+                            {% else %}
+                                <img src="{% static 'auctions/auction_logo.png' %}" class="card-img-top">
+                            {% endif %}
+                            <div class="card-body listing-card-body">
+                                <h3 class="card-title" style="font-weight:700;">{{ listing.title }}&nbsp;
+                                    {% if watchlist %}
+                                        <sup>
+                                            <span class="badge card_badge_watchlist">watchlist</span>
+                                        </sup>
+                                    {% endif %}
+                                </h3>
+                                <p class="card-text">{{ listing.discription }}</p>
+                                <p class="card-text"><small class="text-body-secondary" style="color: #EEF0E5 !important;">Last updated: {{latest_bid_time}}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 2%; margin-bottom:0;">
+                    <div class="col-md-6">
+                        <div class="bid-wrapper">
+                            {% if form.bid.errors %}
+                                <span style="font-size: 10px; color: #EEF0E5; padding: 0">{{form.bid.errors}}<span>
+                            {% endif %}
+                            {% if latest_bid %}
+                                <h3 style="color: #EEF0E5; margin-top: 0;s">Rs.{{ latest_bid|floatformat:2 }}</h3>
+                                <h6 style="font-weight: normal; color: #EEF0E5;">{{ number_of_bids }}, bids so far.
+                                    {% if bidder_name == user.username %}
+                                        Your bid is the current bid.
+                                    {% endif %}
+                                <h6>
+                            {% else %}
+                                <h3 style="color: #EEF0E5;">₹{{ listing.starting_bid|floatformat:2 }}</h3>
+                                <h6 style="font-weight: normal; color: #EEF0E5;">0, bids so far.<h6>
+                            {% endif %}
+                        </div>
+                        <form class="listing-form" action="{% url 'bid' listing.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group listing-input-group">
+                                <span class="input-group-text" id="basic-addon1" style="background-color:#163020" onclick="rotateHammer();">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" style="shape-rendering:geometricPrecision;text-rendering:geometricPrecision;image-rendering:optimizeQuality;fill-rule:evenodd;clip-rule:evenodd" viewBox="0 0 40 40">
+                                        <path id="path1" style="opacity:.603" fill="#b0ccae" d="M21.4 5a11.602 11.602 0 0 1 4.8 4c-.534 0-.8.266-.8.8a22.982 22.982 0 0 1-3.6-3.6 2.29 2.29 0 0 0-.4-1.2Z"/>
+                                        <path id="path2" style="opacity:.851" fill="#b5c3b5" d="M21.4 5c.244.358.378.758.4 1.2-1.67-.262-2.27.402-1.8 2l4.6 4.6c1.666.466 2.266-.134 1.8-1.8a4.21 4.21 0 0 1-1-1.2c0-.534.266-.8.8-.8 1.468 1.1 1.934 2.566 1.4 4.4-.854.71-1.854.978-3 .8.152.878-.114 1.546-.8 2-.558-.526-.958-.392-1.2.4-.522.93-1.322 1.462-2.4 1.6a38.108 38.108 0 0 1 3.2-3.4L18 9.4a47.942 47.942 0 0 1-3.8 3.6c-.362.282-.494.684-.4 1.2-.516.094-.916-.038-1.2-.4 1.042-2.05 2.506-3.85 4.4-5.4a3.374 3.374 0 0 1 1.6-.2c-.466-2.334.468-3.4 2.8-3.2Zm-2 4a64.834 64.834 0 0 1 4.4 4.2c-.266.266-.534.266-.8 0A17.736 17.736 0 0 1 19.4 9Z"/>
+                                        <path id="path3" style="opacity:.639" fill="#b5c5b4" d="M14.2 13a106.248 106.248 0 0 0 5.4 5.6.904.904 0 0 1 .6-.4c1.078-.138 1.878-.67 2.4-1.6.334.138.47.402.4.8-.4.134-.666.4-.8.8l-.8.8c-.658.632-1.458.898-2.4.8.054 3.202-1.414 4.07-4.4 2.6a40.63 40.63 0 0 1-4.6-5c-.866-2.528.002-3.728 2.6-3.6.282.362.684.494 1.2.4-.094-.516.038-.916.4-1.2Zm-.4 2c.158-.41.426-.478.8-.2l3.4 3.4c.266.266.266.534 0 .8a59.172 59.172 0 0 0-4.2-4Zm-2.4 0a3.374 3.374 0 0 1 1.6.2l4.6 4.6c.466 1.666-.134 2.266-1.8 1.8L11.2 17c-.256-.706-.19-1.374.2-2Z"/>
+                                        <path id="path4" style="opacity:.85" fill="#b6c2b6" d="M23.8 16.2a434.07 434.07 0 0 0 11 11.2c.734 2.466-.134 3.334-2.6 2.6a418.494 418.494 0 0 1-10.8-11l.8-.8L33.4 29c.408-.202.474-.466.2-.8A403.266 403.266 0 0 1 23 17.4c.07-.398-.066-.662-.4-.8.242-.794.642-.926 1.2-.4Z"/>
+                                        <path id="path5" style="opacity:.953" fill="#b5c3b5" d="M8.2 27.4c4.534-.066 9.07 0 13.6.2.334.404.468.87.4 1.4.89-.13 1.622.138 2.2.8a15.554 15.554 0 0 1 1 4.8H4.6a15.554 15.554 0 0 1 1-4.8c.578-.662 1.31-.93 2.2-.8a2.764 2.764 0 0 1 .4-1.6Zm1.2.4c3.736-.066 7.47 0 11.2.2a1.782 1.782 0 0 1 .8.6 51.402 51.402 0 0 1-12.8 0 12.378 12.378 0 0 0 .8-.8Zm-2 2c5.068-.066 10.134 0 15.2.2.82.654 1.22 1.522 1.2 2.6a12.974 12.974 0 0 0-3.2.2 17.065 17.065 0 0 1 3.6.6 106.002 106.002 0 0 1-18.4 0 125.89 125.89 0 0 1 10-.6 115.307 115.307 0 0 0-9.6-.2c.018-1.128.418-2.062 1.2-2.8Z"/>
+                                    </svg>
+                                </span>
+                                {{ form.bid }}
+                                <button class="btn btn-outline-secondary bid-btn" type="submit" onclick="rotateHammer();">Bid</button>
+                            </div>
+                            <input type="hidden" name="user" value={{user.username}}>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-group item-details">
+                            <li class="list-group-item">Listed by: {{ listing.listed_by }}</li>
+                            <li class="list-group-item">Category: {{ listing.category }}</li>
+                            <li class="list-group-item">Created at: {{ listing.created_at}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="height: 100%;">
+                <div class="row comments-row">
+                    <div class="col-md-12 comments">
+                        {% for comment in comments %}
+                            <div class="comment-wrapper">
+                                <h5>{{ comment.author }}&nbsp;</h5>
+                                <h6>{{ comment.comment_time }}</h6> 
+                                <span style="display:block;">{{ comment.comment }}</span>
+                            </div>
+                        {% empty %}
+                            <div class="comment-wrapper">
+                                <h5>Listing has no comments.</h5> 
+                            </div>
+                        {% endfor %}   
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="padding:0">
+                        <form action="{% url 'bid' listing.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group input-group-comment">
+                                <span class="input-group-text" style="background-color:#163020">
+                                    <img src="{% static 'auctions/icons8-comment-50.png' %}" width="35px" height="35px">
+                                </span>
+                                {{ form.comment }}
+                                <button class="btn btn-outline-secondary comment-btn"  type="submit" id="button-addon1">Post</button>
+                            </div>
+                            <input type="hidden" name="user" value={{user.username}}>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="winModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modalcolor">
+                    <h5 class="modal-title">Auction Closed</h5>
+                    <button type="button" class="btn-close close-btn" data-bs-dismiss="modal" aria-label="Close" onclick="location.href='{% url 'index' %}';"></button>
+                </div>
+                <div class="modal-body modalcolor">
+                    {% if bidder_name == user.username %}
+                        <p><img style="display: inline-block; float: left; margin-right: 8px;" src="{% static 'auctions/trophy-with-confetti.gif'%}">
+                            Congratulations! You have won the auction. contact seller at <em>{{ seller_email }}</em></p>
+                    {% elif user.username|lower == listing.listed_by|lower  %} 
+                        <p>You have closed the Auction. The winner is <em>{{ bidder_name }}</em>. contact winner at <em>{{winner_email}}</em></p>
+                    {% else %}
+                        <p>The Auction is closed. better luck next time!</p>
+                    {% endif %}
+                </div>
+                <div class="modal-footer modalcolor">
+                    <button type="button" class="btn btn-secondary modal-close-btn" data-bs-dismiss="modal" onclick="location.href='{% url 'index' %}';">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="closeModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modalcolor">
+                    <h5 class="modal-title">Close Auction</h5>
+                    <button type="button" class="btn-close close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body modalcolor">
+                    <p> Are you sure you want to close the auction ?</p>
+                </div>
+                <div class="modal-footer modalcolor">
+                    <button type="button" class="btn btn-secondary modal-close-btn" data-bs-dismiss="modal" onclick="location.href='{% url 'close' listing.id %}';">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function rotateHammer() {
+            anime({
+                targets: ['#path1', '#path2', '#path3', '#path4'],
+                translateY: 10,
+                rotate: {
+                  value: '-50deg', 
+                  easing: 'linear',
+                },
+                duration: 170, 
+                complete: function(anim) {
+                  // Animation to revert changes
+                  anime({
+                    targets: ['#path1', '#path2', '#path3', '#path4'],
+                    translateY: 0,
+                    rotate: {
+                      value: '0deg', // Rotate back to the original position
+                      easing: 'linear',
+                    },
+                    duration: 170,
+                  });
+                },
+              });
+        }
+      </script>
+      <script>
+        const collection = document.getElementsByClassName("options");
+        for (let i = 0; i < collection.length; i++) {
+            if ("True" === "{{watchlist}}") {
+               if(collection[i].textContent === "Add to"){
+                    collection[i].style.display = "None";
+               }
+            } else if ("False" === "{{watchlist}}"){
+                if(collection[i].textContent === "Remove"){
+                    collection[i].style.display = "None";
+               } 
+            } else {
+                break;
+            }
+        }
+    </script>
+    <script>
+        function openCloseModal(){
+            new bootstrap.Modal(document.getElementById("closeModal")).show();
+        }
+    </script>
+    {% if close %}
+        <script>
+            let myModal = new bootstrap.Modal(document.getElementById("winModal"));
+            myModal.show();
+        </script>
+    {% endif %}
+{% endblock %}

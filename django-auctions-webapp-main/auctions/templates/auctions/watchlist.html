@@ -1,0 +1,61 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+{% load auction_extras %}
+
+{% block watchlist %}
+    <a class="nav-link" href="{% url 'view_watchlist' %}">Watchlist
+        <span class="badge text-bg-secondary">{{ watchlist_count }}</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="watchlist-header">
+        <h2>Watchlist Items</h2>
+    </div>
+    {% for item in watchlist_items%}
+        <div class="watchlist-result-wrapper">
+            <div class="card watchlist-result-card mb-3" onclick="location.href='{% url 'bid' item.id %}';">
+                <div class="row g-0">
+                    <div class="col-md-4" style="max-height: 40vh">
+                        {% if item.image_url %}
+                            <img src="{{ item.image_url }}"  class="img-fluid rounded-start" style="height: 100%; width:100%;">
+                        {% else %}
+                            <img src="{% static 'auctions/auction_logo.png' %}"  class="img-fluid rounded-start" alt="...">
+                        {% endif %}                    
+                    </div>
+                    <div class="col-md-8 listing-card-body">
+                        <div class="card-body listing-card-body">
+                            <h5 class="card-title">{{ item.title }}</h5>
+                            <p class="card-text" style="font-weight:700"> category: {{ item.category }}</p>
+                            <p class="card-text" style="font-weight:700">Current price: ${{ current_price|get_item:item.id|floatformat:2 }}</p>
+                            <p class="card-text"><small style="font-weight:700">created: {{ item.created_at}}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="watchlist-result-wrapper">
+            <div class="card watchlist-result-card mb-3" onclick="location.href='{% url 'index' %}'">
+                <div class="row g-0">
+                    <div class="col-md-4" style="max-height: 40vh">
+                        <img src="{% static 'auctions/auction_logo.png' %}"  class="img-fluid rounded-start" alt="...">                 
+                    </div>
+                    <div class="col-md-8 listing-card-body">
+                        <div class="card-body listing-card-body">
+                            <h5 class="card-title">You have no items in your watchlist</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {%endfor%}
+    <script type="text/javascript">
+        ScrollReveal({ reset: true });
+        ScrollReveal().reveal('.card', {interval: 800});
+    </script>
+{% endblock %}
+
+

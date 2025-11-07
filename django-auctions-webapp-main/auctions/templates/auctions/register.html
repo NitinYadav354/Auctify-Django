@@ -1,0 +1,51 @@
+{% extends "auctions/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+
+    <div class="register-wrapper">
+        <div class="register-header">
+            <h2>Register</h2>
+        </div>
+        
+        {% if message %}
+            <div class="register-error">{{ message }}</div>
+        {% endif %}
+
+        <form action="{% url 'register' %}" method="post">
+            {% csrf_token %}
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">
+                    <img src="{% static 'auctions/icons8-username-50.png' %}" width="25px" height="25spx">
+                </span>
+                <input autofocus type="text" class="form-control" name="username" placeholder="Username" aria-describedby="addon-wrapping">
+            </div>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">
+                    <img src="{% static 'auctions/icons8-email-50.png' %}" width="25px" height="25px">
+                </span>
+                <input type="email" class="form-control" name="email" placeholder="Email Address" aria-describedby="addon-wrapping">
+            </div>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">
+                    <img src="{% static 'auctions/icons8-password-50.png' %}" width="25px" height="25px">
+                </span>
+                <input type="password" class="form-control" name="password" placeholder="Password" aria-describedby="addon-wrapping">
+            </div>
+            <div class="input-group flex-nowrap">
+                <span class="input-group-text" id="addon-wrapping">
+                    <img src="{% static 'auctions/icons8-confirm-password-50.png' %}" width="25px" height="25px">
+                </span>
+                <input type="password" class="form-control" name="confirmation" placeholder="Confirm Password" aria-describedby="addon-wrapping">
+            </div>
+            <div class="form-btn register-btn-container">
+                <input class="btn register-btn" type="submit" value="Register">
+            </div>
+        </form>
+        <div class="login-here">
+            <span>Already have an account? </span><a href="{% url 'login' %}">Log In here.</a>
+        </div>
+    <div>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "auctions/layout.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block watchlist %}
+    <a class="nav-link" href="{% url 'view_watchlist' %}">Watchlist
+        <span class="badge text-bg-secondary">{{ watchlist_count }}</span>
+    </a>
+{% endblock %}
+
+{% block body %}
+    <div class="create-listing-wrapper">
+        <div class="create-listing-header">
+            <h2>Create Listing</h2>
+        </div>
+        
+        <div class="form-error">{{ form.errors }}</div>
+        
+        <form class="create-listing-form" action={% url 'create' %} method="post">
+            {% csrf_token %}
+            
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Title&nbsp;</span>    
+                {{ form.title }}
+            </div>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Price</span>    
+                {{ form.starting_bid }}
+            </div>           
+            <div class="input-group">
+                <label class="input-group-text" for="inputGroupSelect01">Category&nbsp;&nbsp;&nbsp;</label>
+                {{ form.category}}
+            </div>
+            <div class="input-group">
+                <span class="input-group-text">Discription</span>
+                {{ form.discription }}
+            </div>
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">Image</span>
+                {{ form.image_url}}
+            </div>
+            <div class="form-btn post-btn-container">
+                <input class="btn post-btn" type="submit" value="Post">
+            </div>
+            <input type="hidden" name="listed_by" value ="{{ user.username }}">
+        </form>
+    </div>
+{% endblock %}
